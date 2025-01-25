@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public float maxVerticalSpeed = 5f;
     public float speedMultipplier = 2f;
     [SerializeField] private float velocitySmoothingFactor = .5f; // 0f for no movement, 1f for faster acceleration
-
+    [SerializeField] GameObject forwardLight, backwardLight;
     [SerializeField, Self] Rigidbody2D body;
     [SerializeField, Child] SpriteRenderer playerSprite;
     private float horizontalInput;
@@ -37,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
         // Flip sprite depending on way player is moving
         if (horizontalInput != 0) {
             playerSprite.flipX = horizontalInput < 0;
+            backwardLight.SetActive(playerSprite.flipX);
+            forwardLight.SetActive(!backwardLight.activeSelf);
         }
             
     }
