@@ -1,3 +1,5 @@
+using System;
+using KBCore.Refs;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -6,32 +8,37 @@ public class PlayerMovement : MonoBehaviour
     public float swimForce=5f;
     public float maxVerticalSpeed = 5f;
     public float speedMultipplier = 2f;
+    [SerializeField] private float velocitySmoothingFactor = .5f; // 0f for no movement, 1f for faster acceleration
 
-    public Rigidbody2D body;
+    [SerializeField, Self] Rigidbody2D body;
+    [SerializeField, Child] SpriteRenderer playerSprite;
     private float horizontalInput;
 
     public float swimCooldown = 0.5f;
-    public float lastSwimTime = -Mathf.Infinity; 
+    public float lastSwimTime = -Mathf.Infinity;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+    void OnValidate() {
+        this.ValidateRefs();
     }
 
     // Update is called once per frame
     void Update()
     {
-
         // prevent spamming that lauch the player into mar 
         if(Input.GetKeyDown(KeyCode.W) && Time.time - lastSwimTime >= swimCooldown)
         {
-            swimup();
+            SwimUp();
             lastSwimTime = Time.time;
         }
 
         // horizontal movement 
         horizontalInput = Input.GetAxis("Horizontal");
+        
+        // Flip sprite depending on way player is moving
+        if (horizontalInput != 0) {
+            playerSprite.flipX = horizontalInput < 0;
+        }
+            
     }
     void FixedUpdate()
     {
@@ -40,13 +47,12 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             newSpeed *= speedMultipplier;
-            Debug.Log("RuN");
         }
         float targetSpeed = horizontalInput * newSpeed;
-        float smoothedSpeed = Mathf.Lerp(body.linearVelocity.x, targetSpeed, 0.1f);
+        float smoothedSpeed = Mathf.Lerp(body.linearVelocity.x, targetSpeed, velocitySmoothingFactor);
         body.linearVelocity = new Vector2(smoothedSpeed, body.linearVelocity.y);
     }
-    private void swimup()
+    private void SwimUp()
     {
         //reseting
         float newVerticalSpeed = swimForce;
