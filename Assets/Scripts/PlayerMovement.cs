@@ -43,8 +43,8 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("RuN");
         }
         float targetSpeed = horizontalInput * newSpeed;
-        float smoothedSpeed = Mathf.Lerp(body.velocity.x, targetSpeed, 0.1f);
-        body.velocity = new Vector2(smoothedSpeed, body.velocity.y);
+        float smoothedSpeed = Mathf.Lerp(body.linearVelocity.x, targetSpeed, 0.1f);
+        body.linearVelocity = new Vector2(smoothedSpeed, body.linearVelocity.y);
     }
     private void swimup()
     {
@@ -53,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
         //cap the vertical movement
         newVerticalSpeed = Mathf.Clamp(newVerticalSpeed, -Mathf.Infinity, maxVerticalSpeed);
         // apply force
-        body.velocity = new Vector2(body.velocity.x, newVerticalSpeed);
+        body.linearVelocity = new Vector2(body.linearVelocity.x, newVerticalSpeed);
 
     }
 }
