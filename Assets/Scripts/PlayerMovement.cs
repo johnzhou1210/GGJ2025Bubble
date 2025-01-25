@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Child] Animator animator; 
     private float horizontalInput;
     private bool jumping = false;
+    
 
     public float swimCooldown = 0.5f;
     public float lastSwimTime = -Mathf.Infinity;
