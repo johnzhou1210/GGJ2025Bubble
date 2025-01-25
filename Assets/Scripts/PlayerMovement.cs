@@ -12,7 +12,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject forwardLight, backwardLight;
     [SerializeField, Self] Rigidbody2D body;
     [SerializeField, Child] SpriteRenderer playerSprite;
+    [SerializeField, Child] Animator animator; 
     private float horizontalInput;
+    private bool jumping = false;
 
     public float swimCooldown = 0.5f;
     public float lastSwimTime = -Mathf.Infinity;
@@ -24,24 +26,33 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // prevent spamming that lauch the player into mar 
-        if(Input.GetKeyDown(KeyCode.W) && Time.time - lastSwimTime >= swimCooldown)
-        {
-            SwimUp();
-            lastSwimTime = Time.time;
-        }
-
         // horizontal movement 
         horizontalInput = Input.GetAxis("Horizontal");
+        
+
+        
         
         // Flip sprite depending on way player is moving
         if (horizontalInput != 0) {
             playerSprite.flipX = horizontalInput < 0;
             backwardLight.SetActive(playerSprite.flipX);
             forwardLight.SetActive(!backwardLight.activeSelf);
+            animator.Play("walk");
+        } else if (!jumping) {
+            animator.Play("Idle");
         }
-            
+        
+        
+        // prevent spamming that lauch the player into mar 
+        if(Input.GetKeyDown(KeyCode.W) && Time.time - lastSwimTime >= swimCooldown) {
+            jumping = true;
+            SwimUp();   
+            animator.Play("Jump");
+            lastSwimTime = Time.time;
+            Invoke(nameof(ResetJump), swimCooldown);
+        } 
     }
+    
     void FixedUpdate()
     {
         // swim faster and check if it being hold or not 
@@ -62,6 +73,10 @@ public class PlayerMovement : MonoBehaviour
         newVerticalSpeed = Mathf.Clamp(newVerticalSpeed, -Mathf.Infinity, maxVerticalSpeed);
         // apply force
         body.linearVelocity = new Vector2(body.linearVelocity.x, newVerticalSpeed);
-
     }
+
+    private void ResetJump() {
+        jumping = false;
+    }
+    
 }
