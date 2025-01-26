@@ -19,10 +19,22 @@ public class PlayerMovement : MonoBehaviour
     public float swimCooldown = 0.5f;
     public float lastSwimTime = -Mathf.Infinity;
 
+    public int maxJump = 4;
+    public float jumpRestartTimer = 0f;
+    public bool inBubble = false;
+    public int jumpcounter = 0;
+    private bool jumpCooldown = false;
+
+    //sound
+    [SerializeField] private AudioClip swimsound;
+    private AudioSource audioSource; 
     void OnValidate() {
         this.ValidateRefs();
     }
-
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     // Update is called once per frame
     void Update()
     {
@@ -44,13 +56,34 @@ public class PlayerMovement : MonoBehaviour
         
         
         // prevent spamming that lauch the player into mar 
-        if(Input.GetKeyDown(KeyCode.W) && Time.time - lastSwimTime >= swimCooldown) {
-            jumping = true;
-            SwimUp();   
-            animator.Play("Jump");
-            lastSwimTime = Time.time;
-            Invoke(nameof(ResetJump), swimCooldown);
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            if(Time.time - lastSwimTime >= swimCooldown && jumpcounter<=maxJump)
+            {
+                jumping = true;
+                jumpcounter++;
+                SwimUp();
+                animator.Play("Jump");
+                lastSwimTime = Time.time;
+                Invoke(nameof(ResetJump), swimCooldown);
+                
+                if(jumpcounter>=maxJump)
+                {
+                    jumpCooldown = true;
+                    Invoke(nameof(ResetJumpCounter), 2f);
+                }
+            }
+            
+            
         } 
+        if(inBubble == true)
+        {
+            maxJump = 999;
+        }
+        else
+        {
+            maxJump = 3;
+        }
     }
     
     void FixedUpdate()
@@ -73,10 +106,17 @@ public class PlayerMovement : MonoBehaviour
         newVerticalSpeed = Mathf.Clamp(newVerticalSpeed, -Mathf.Infinity, maxVerticalSpeed);
         // apply force
         body.linearVelocity = new Vector2(body.linearVelocity.x, newVerticalSpeed);
+        //audioSource.PlayOneShot(jumpSound);<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     }
 
     private void ResetJump() {
         jumping = false;
+    }
+
+    private void ResetJumpCounter()
+    {
+        jumpcounter = 0;
+        jumpCooldown = false;
     }
     
 }
