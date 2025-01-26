@@ -1,16 +1,17 @@
 using System;
+using System.ComponentModel.Design.Serialization;
 using KBCore.Refs;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class PlayerMovement : MonoBehaviour
-{
+public class PlayerMovement : MonoBehaviour {
+    public static PlayerMovement Instance;
     public float speed=1f;
     public float swimForce=5f;
     public float maxVerticalSpeed = 5f;
     public float speedMultipplier = 2f;
     [SerializeField] private float velocitySmoothingFactor = .5f; // 0f for no movement, 1f for faster acceleration
-    [SerializeField] GameObject forwardLight, backwardLight;
+    [SerializeField] GameObject forwardLight, backwardLight, bubbleEffect;
     [SerializeField, Self] Rigidbody2D body;
     [SerializeField, Child] SpriteRenderer playerSprite;
     [SerializeField] Animator spriteAnimator, lightAnimator; 
@@ -35,6 +36,15 @@ public class PlayerMovement : MonoBehaviour
     void OnValidate() {
         this.ValidateRefs();
     }
+
+    void Awake() {
+        if (Instance == null) {
+            Instance = this;
+        } else {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -62,7 +72,7 @@ public class PlayerMovement : MonoBehaviour
         // prevent spamming that lauch the player into mar 
         if(Input.GetKeyDown(KeyCode.W))
         {
-            if(Time.time - lastSwimTime >= swimCooldown && jumpcounter<=maxJump && !jumpCooldown)
+            if(inBubble || (Time.time - lastSwimTime >= swimCooldown && jumpcounter <= maxJump && !jumpCooldown))
             {
                 lightAnimator.Play("blinkonce");
                 jumping = true;
@@ -132,15 +142,25 @@ public class PlayerMovement : MonoBehaviour
         jumpCooldown = false;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject == Bubble)
-        {
-            inBubble = true;
-        }
-        else
-        {
-            inBubble = false;
+    public void ActivateBubble() {
+        bubbleEffect.SetActive(true); 
+        Invoke(nameof(PopBubble), 10f);
+        
+    }
+
+    public void PopBubble() {
+        inBubble = false;
+        CancelInvoke(nameof(PopBubble));
+        bubbleEffect.GetComponent<Animator>().Play("bubblepop");
+    }
+    
+    void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.layer == 3) { // terrain layer
+            PopBubble();
         }
     }
+
+
+
+
 }
