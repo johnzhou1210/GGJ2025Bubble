@@ -20,11 +20,13 @@ public class PlayerMovement : MonoBehaviour
     public float swimCooldown = 0.5f;
     public float lastSwimTime = -Mathf.Infinity;
 
-    public int maxJump = 4;
+    public int maxJump = 3;
     public float jumpRestartTimer = 0f;
     public bool inBubble = false;
     public int jumpcounter = 0;
     private bool jumpCooldown = false;
+
+    public GameObject Bubble;
 
     //sound
     [SerializeField] private AudioClip swimsound;
@@ -71,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
                 if(jumpcounter>=maxJump)
                 {
                     jumpCooldown = true;
-                    Invoke(nameof(ResetJumpCounter), 2f);
+                    Invoke(nameof(ResetJumpCounter), 3f);
                 }
             }
             
@@ -119,5 +121,16 @@ public class PlayerMovement : MonoBehaviour
         jumpcounter = 0;
         jumpCooldown = false;
     }
-    
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject == Bubble)
+        {
+            inBubble = true;
+        }
+        else
+        {
+            inBubble = false;
+        }
+    }
 }
