@@ -1,6 +1,7 @@
 using System;
 using KBCore.Refs;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject forwardLight, backwardLight;
     [SerializeField, Self] Rigidbody2D body;
     [SerializeField, Child] SpriteRenderer playerSprite;
-    [SerializeField, Child] Animator animator; 
+    [SerializeField] Animator spriteAnimator, lightAnimator; 
     private float horizontalInput;
     private bool jumping = false;
     
@@ -52,28 +53,31 @@ public class PlayerMovement : MonoBehaviour
             playerSprite.flipX = horizontalInput < 0;
             backwardLight.SetActive(playerSprite.flipX);
             forwardLight.SetActive(!backwardLight.activeSelf);
-            animator.Play("walk");
+            spriteAnimator.Play("walk");
         } else if (!jumping) {
-            animator.Play("Idle");
+            spriteAnimator.Play("Idle");
         }
         
         
         // prevent spamming that lauch the player into mar 
         if(Input.GetKeyDown(KeyCode.W))
         {
-            if(Time.time - lastSwimTime >= swimCooldown && jumpcounter<=maxJump)
+            if(Time.time - lastSwimTime >= swimCooldown && jumpcounter<=maxJump && !jumpCooldown)
             {
+                lightAnimator.Play("blinkonce");
                 jumping = true;
                 jumpcounter++;
                 SwimUp();
-                animator.Play("Jump");
+                spriteAnimator.Play("Jump");
                 lastSwimTime = Time.time;
                 Invoke(nameof(ResetJump), swimCooldown);
+                CancelInvoke(nameof(ResetJumpCounter));
+                Invoke(nameof(ResetJumpCounter), 3f);
                 
                 if(jumpcounter>=maxJump)
                 {
                     jumpCooldown = true;
-                    Invoke(nameof(ResetJumpCounter), 3f);
+                    
                 }
             }
             
@@ -88,6 +92,10 @@ public class PlayerMovement : MonoBehaviour
             maxJump = 3;
         }
     }
+    
+    
+   
+    
     
     void FixedUpdate()
     {
@@ -109,7 +117,8 @@ public class PlayerMovement : MonoBehaviour
         newVerticalSpeed = Mathf.Clamp(newVerticalSpeed, -Mathf.Infinity, maxVerticalSpeed);
         // apply force
         body.linearVelocity = new Vector2(body.linearVelocity.x, newVerticalSpeed);
-        //audioSource.PlayOneShot(jumpSound);<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        audioSource.pitch = Random.Range(0.5f, 0.8f);
+        audioSource.PlayOneShot(Resources.Load<AudioClip>("Sounds/swimstroke"));
     }
 
     private void ResetJump() {
@@ -118,6 +127,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ResetJumpCounter()
     {
+        lightAnimator.Play("blinktwice");
         jumpcounter = 0;
         jumpCooldown = false;
     }
