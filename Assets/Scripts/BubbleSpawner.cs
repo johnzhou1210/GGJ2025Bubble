@@ -18,7 +18,6 @@ public class BubbleSpawner : MonoBehaviour {
                 currentBubble = Instantiate(Resources.Load<GameObject>("Prefabs/Bubble"), transform.position + Vector3.up * 1f, Quaternion.identity);
             }
         }
-        yield return null;
     }
 
 }
