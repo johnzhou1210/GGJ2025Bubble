@@ -143,12 +143,14 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     public void ActivateBubble() {
+        body.gravityScale = 0f;
         bubbleEffect.SetActive(true); 
         Invoke(nameof(PopBubble), 10f);
         
     }
 
     public void PopBubble() {
+        body.gravityScale = .3f;
         inBubble = false;
         CancelInvoke(nameof(PopBubble));
         bubbleEffect.GetComponent<Animator>().Play("bubblepop");
@@ -156,7 +158,9 @@ public class PlayerMovement : MonoBehaviour {
     
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.layer == 3) { // terrain layer
-            PopBubble();
+            if (bubbleEffect.activeSelf) {
+                PopBubble();
+            }
         }
     }
 
