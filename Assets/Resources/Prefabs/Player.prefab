@@ -83,6 +83,7 @@ GameObject:
   - component: {fileID: 15924044685494365}
   - component: {fileID: 8788445867045813455}
   - component: {fileID: 3884765899328774080}
+  - component: {fileID: 8589259505249572292}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -121,10 +122,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa187335468ee4a3d9d1657e20fa3fbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 3
   swimForce: 6
   maxVerticalSpeed: 6
-  speedMultipplier: 3
+  speedMultipplier: 4
   velocitySmoothingFactor: 0.8
   forwardLight: {fileID: 6068520110782576558}
   backwardLight: {fileID: 7722723511191561578}
@@ -376,6 +377,29 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+--- !u!164 &8589259505249572292
+AudioReverbFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3164926608052206689}
+  m_Enabled: 1
+  m_DryLevel: 0
+  m_Room: -1000
+  m_RoomHF: -4000
+  m_DecayTime: 1.49
+  m_DecayHFRatio: 0.1
+  m_ReflectionsLevel: -449
+  m_ReverbLevel: 1700
+  m_ReverbDelay: 0.011
+  m_Diffusion: 100
+  m_Density: 100
+  m_HFReference: 5000
+  m_RoomLF: 0
+  m_LFReference: 250
+  m_ReflectionsDelay: 0
+  m_ReverbPreset: 23
 --- !u!1 &4167302086303588581
 GameObject:
   m_ObjectHideFlags: 0
