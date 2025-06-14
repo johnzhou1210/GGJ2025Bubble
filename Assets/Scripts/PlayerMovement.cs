@@ -127,7 +127,7 @@ public class PlayerMovement : MonoBehaviour {
         newVerticalSpeed = Mathf.Clamp(newVerticalSpeed, -Mathf.Infinity, maxVerticalSpeed);
         // apply force
         body.linearVelocity = new Vector2(body.linearVelocity.x, newVerticalSpeed);
-        audioSource.pitch = Random.Range(0.5f, 0.8f);
+        audioSource.pitch = Random.Range(0.5f, 0.64f);
         audioSource.PlayOneShot(Resources.Load<AudioClip>("Sounds/swimstroke"));
     }
 
@@ -150,9 +150,11 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     public void PopBubble() {
+        audioSource.PlayOneShot(Resources.Load<AudioClip>("Sounds/bubblepop"));
         body.gravityScale = .3f;
         inBubble = false;
         CancelInvoke(nameof(PopBubble));
+        audioSource.pitch = Random.Range(0.7f, 0.8f);
         bubbleEffect.GetComponent<Animator>().Play("bubblepop");
     }
     
